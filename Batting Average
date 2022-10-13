@@ -1,0 +1,54 @@
+/*Instructions
+Write a program that prints the batting average of 100 baseball players.
+(inputs: Name, at_bats, hits).
+if batting ave >=0.50, the remarks is "High", else "Low".
+The output is in tabulare form:  Batting Ave = Hits/At_bats.
+Name    At bats    Hits    Ave     Remarks
+Mel        20       10     0.5     High
+Gas        30        3     0.01   Low
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX 5
+
+int main(){
+
+    double ab[MAX],h[MAX];
+    int c;
+    float bat_ave;
+    char n [MAX][31];
+
+
+    for (c=0; c<MAX;c++){
+
+        printf("Player name: ");
+        scanf("%s", n[c]);
+
+        printf("Input At bats: ");
+        scanf("%lf",&ab[c]);
+
+        printf("Input Hits: ");
+        scanf("%lf",&h[c]);
+
+
+    }
+    system("cls");
+
+    printf("  Name  At bats   Hits    Average      Remarks\n");
+
+    for (c=0;c<MAX;c++){
+
+        bat_ave = (h[c]/ab[c]);
+
+        printf("%d.)%s \t%6.2f \t%6.2f \t%6.2f\t\t",c+1,n[c],ab[c],h[c],bat_ave);
+
+        if (bat_ave>=0.50)
+            printf("High \n");
+        else
+            printf("Low \n");
+    }
+    return 0;
+}
+
+
