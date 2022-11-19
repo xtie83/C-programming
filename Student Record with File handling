@@ -1,0 +1,337 @@
+
+Conversation opened. 1 unread message.
+
+Skip to content
+Using Gmail with screen readers
+Conversations
+12.66 GB of 15 GB (84%) used
+Terms · Privacy · Program Policies
+Last account activity: 6 minutes ago
+Details
+/*Modify the Student Record Program to include Update operation.
+(Use array of structures with file handling)
+
+Menu
+1. Add a record
+2. Update a record
+3. Delete a record
+4. Display all
+5. Exit
+
+*/
+
+#include <stdio.h>
+#include <windows.h>
+#include <stdlib.h>
+#include <string.h>
+#include <conio.h> //Need for getche();
+#define MAX 5
+
+//Create a structure for the student's data
+typedef struct studentrecords{
+    char name[30];
+    int q1;
+    int q2;
+    int q3;
+
+}REC;
+
+//create an array placeholder for the student's data
+typedef struct student{
+    REC st[MAX];
+    int last;
+}LIST;
+
+LIST L;
+
+void makenull();
+void add(REC s);
+void del (char n[30]);
+void display();
+int locate(char n[30]);
+void update (char n[31]);
+int isFull();
+int isEmpty();
+void upload();
+void download();
+float avg(int qz1, int qz2, int qz3);
+int searchPos(char n[30]);
+void gotoxy(int x, int y);
+
+int main(){
+REC x;
+makenull();
+download();
+char menu;
+while(1){
+	system("cls");
+    gotoxy(30,5);
+    printf("Menu\n");
+    gotoxy(25,7);
+    printf("1. Add Record\n");
+    gotoxy(25,8);
+    printf("2. Update Record\n");
+    gotoxy(25,9);
+    printf("3. Delete Record\n");
+    gotoxy(25,10);
+    printf("4. Display All\n");
+    gotoxy(25,11);
+    printf("5. Exit\n");
+    gotoxy(25,13);
+    printf("Select 1-5: ");
+    menu = getche();	//used getche() instead of scanf. No need to press Enter after choosing an option
+    switch(menu){
+    case '1': system("cls");
+            gotoxy(30,4);
+            printf("==== Student Record Database ==== \n");
+            gotoxy(30,5);
+            printf("Insert Mode\n");
+            gotoxy(30,6);
+            printf("Enter Student Name : ");scanf(" %[^\n]s",x.name);
+            if (locate(x.name)<0){
+                gotoxy(30,7);
+                printf("Input Quiz 1: ");scanf("%d",&x.q1);
+                gotoxy(30,8);
+                printf("Input Quiz 2: ");scanf("%d",&x.q2);
+                gotoxy(30,9);
+                printf("Input Quiz 3: ");scanf("%d",&x.q3);
+                add(x);
+				break;
+            }
+            else{
+                gotoxy(30,5);
+                printf("Existing student record!\n");
+                system("pause");
+                }
+            break;
+
+    case '2': system("cls");
+            gotoxy(30,5);
+            printf("Update Mode\n");
+            gotoxy(30,6);
+            printf("Enter student name: ");scanf(" %[^\n]s",x.name);
+            update(x.name);break;
+
+    case '3': system("cls");
+            gotoxy(30,5);
+            printf("Delete Mode\n");
+            gotoxy(30,6);
+            printf("Enter student name: ");scanf(" %[^\n]s",x.name);
+            del(x.name);break;
+
+    case '4': display();break;
+
+    case '5': upload();exit(0);
+
+    default: printf("\nInvalid input. Select 1 to 4 only.\n");system("pause"); break;
+        }
+    }
+}
+
+//Reset array position counter
+void makenull(){
+    L.last = -1;
+}
+
+//Add a record to the student's data
+void add(REC s){
+    int i,pos;
+    if (isFull()){
+            printf("List is full.\n");
+            system("pause");
+            }
+    else{
+         pos=searchPos(s.name);
+         L.last++; //added for duplicate name search
+         for (i=L.last;i>=pos;i--){
+            L.st[i+1]=L.st[i];
+            //L.st[pos]=s; removed
+            //L.last++; removed
+         }
+         L.st[pos]=s;
+         }
+    }
+//Delete a student's data
+void del(char n[30]){
+    int s,i;
+    if (isEmpty()){
+        printf("List is empty.\n");
+        system("pause");
+    }
+    else{
+        s=locate(n);
+        if (s<0){
+            printf("Not found.\n");
+            system("pause");
+            }
+        else{
+            for (i=s;i<=L.last;i++){
+            L.st[i]=L.st[i+1];
+            }
+            L.last--;
+        }
+    }
+}
+
+//Read the data from the array
+void display(){
+int i;
+float ave;
+system("cls");
+        printf("Student Name    Quiz 1   Quiz 2    Quiz 3   Average     Remarks\n");
+        for(i=0;i<=L.last;i++){
+        ave = avg(L.st[i].q1,L.st[i].q2,L.st[i].q3);
+        printf("%d.) %s\t%d\t%d\t%d\t%4.2f\t%s\n",i+1,L.st[i].name,L.st[i].q1,L.st[i].q2,L.st[i].q3,ave,ave>=75? "Passed":"Failed");
+        }
+        system("pause");
+}
+
+//Function in searching for the name of student
+int locate(char n[31]){
+int i;
+    for (i=0;i<=L.last;i++){
+        if (strcmp(L.st[i].name, n)==0)
+        return (i);}
+        return (-1);
+}
+int isFull(){
+    return (L.last==MAX-1);
+}
+int isEmpty(){
+    return (L.last==-1);
+}
+
+//Calculate for quiz average	
+float avg(int qz1, int qz2, int qz3){
+return ((float)(qz1+qz2+qz3)/3.0);
+}
+int searchPos(char n[31]){
+int i;
+for (i=0;i<=L.last;i++){
+    if ((strcmp(L.st[i].name,n)>=0)) //alphabetical order
+        return i;
+    }
+return i;
+}
+
+//Save the array to a file
+void upload(){
+FILE *fp;
+int i;
+fp = fopen("StudentRecord.dbf","w+");
+if (fp==NULL){
+    printf("File Error!\n"); //For debugging only. w+ will create the file anyway if it doesn't exists
+    system("pause");
+    }
+else {
+    for (i=0;i<=L.last;i++)
+        fprintf(fp,"%s %d %d %d\n",L.st[i].name,L.st[i].q1,L.st[i].q2,L.st[i].q3);
+        }
+fclose(fp);
+}
+
+//Read the file contents
+void download(){
+int MAX_LEN = 100; //Maximum length per line
+	REC x;
+	int i=0;
+	char * tempData;
+    FILE *dataFile;
+	dataFile = fopen("StudentRecord.dbf", "r"); //Just for debugging. Can be omitted and just use a+ I/O option
+    if (dataFile == NULL) {
+        printf("\n\nDatabase does not exists!.\nCreating the database now.\nYou will be directed to the main menu.\n");
+		dataFile = fopen("StudentRecord.dbf", "a+");
+		fclose(dataFile);
+		system("pause");
+    } else{
+		
+		  char buffer[MAX_LEN];
+		  
+	//This process reads each line of the file, get the data delimited by spaces (NULL) and pass to structure x
+    while (fgets(buffer, MAX_LEN, dataFile))
+    {
+        // Remove trailing newline
+        buffer[strcspn(buffer, "\n")] = 0;
+		tempData = strtok(buffer," ");
+		if (tempData !=NULL) strcpy(x.name, tempData);
+		tempData = strtok(NULL," ");
+		if (tempData != NULL) x.q1 = atoi(tempData);
+		tempData = strtok(NULL," ");
+		if (tempData != NULL) x.q2 = atoi(tempData);
+		tempData = strtok(NULL," ");
+		if (tempData != NULL) x.q3 = atoi(tempData);
+        add(x);
+		
+    }
+	
+	}
+    fclose(dataFile);
+}
+
+//Updating quiz scores
+void update(char n[31]){
+int p;
+char x;
+if (isEmpty()){
+    printf("List is empty.\n");
+    system("pause");
+}
+else {
+    p = locate(n);
+    if (p<0){
+        printf("Student record not found.\n");
+        system("pause");
+    }
+    else {
+         system("cls");
+         gotoxy(30,5);
+         printf("Update Mode\n");
+         gotoxy(25,7);
+         printf("Students`s Name: %s\n",L.st[p].name);
+         gotoxy(25,8);
+         printf("Quiz 1: %d\n",L.st[p].q1);
+         gotoxy(25,9);
+         printf("Quiz 2: %d\n",L.st[p].q2);
+         gotoxy(25,10);
+         printf("Quiz 3: %d\n",L.st[p].q3);
+         
+		 gotoxy(25,12);
+		 printf("Alter Quiz Data\n");
+         gotoxy(25,13);
+		 printf("1 - Quiz 1:");
+		 gotoxy(25,14);
+		 printf("2 - Quiz 2:");
+		 gotoxy(25,15);
+         printf("3 - Quiz 3:");
+		 gotoxy(25,17);
+		 printf("Select the Quiz to update : ");
+		 x = getche();
+		switch(x){ //Select which Quiz number to update
+		case '1' : gotoxy(25,20);
+				   printf("Input new Quiz 1:");
+		  		   scanf("%d",&L.st[p].q1); display();
+				   break;
+		case '2' : gotoxy(25,21);
+				   printf("Input new Quiz 2:");
+				   scanf("%d",&L.st[p].q2); display();
+				   break;
+		case '3' : gotoxy(25,20);
+				   printf("Input new Quiz 3:");
+                   scanf("%d",&L.st[p].q3) ;display();
+				   break;
+		default:   gotoxy(25,23);
+		           printf("\nInvalid input. Select 1 to 3 only.\n");system("pause"); break;
+        }
+		
+    }
+}
+
+}
+void gotoxy(int x,int y){
+    COORD coord = {0,0};
+    coord.X=x;
+    coord.Y=y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),coord);
+}
+code.c.c
+Displaying code.c.c. 
